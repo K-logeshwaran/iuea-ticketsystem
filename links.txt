@@ -1,0 +1,27 @@
+https://cloud.mongodb.com/v2/66b3662039007104f6e3d924#/metrics/replicaSet/66b36813cd85904468fd28b3/explorer/test/tickets/find
+
+
+
+curl -X POST http://localhost:3000/ticket/0807240000/solution \
+     -H "Content-Type: application/json" \
+     -d '{
+           "solution": "solution added"
+         }'
+
+
+
+curl -X POST http://localhost:3000/ticket \
+     -H "Content-Type: application/json" \
+     -d '{
+           "issue": "Trying to add solution"
+         }'
+
+
+
+    curl -X POST https://7b84-2401-4900-4df8-53b7-b9e8-1b76-902-2b51.ngrok-free.app/ticket \
+        -H "Content-Type: application/json" \
+        -d '{
+            "issue": "Testing the issue"
+            }'
+
+ngrok http 3000
