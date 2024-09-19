@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Table</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Basic styling for the loading indicator */
+        #loadingIndicator {
+            display: none; /* Hidden by default */
+            position: fixed; /* Fixed position */
+            top: 0; /* Position at the top */
+            left: 0; /* Position at the left */
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            background-color: rgba(255, 255, 255, 0.8); /* White background with transparency */
+            text-align: center; /* Center text */
+            padding-top: 20%; /* Center vertically */
+            font-size: 24px; /* Font size */
+            z-index: 1000; /* Above all other content */
+        }
+    </style>
+</head>
+<body>
+    <div id="loadingIndicator">updating solution...</div>
+    <div class="container mt-5">
+        <h2>Ticket Table</h2>
+        <div class="form-group">
+            <label for="statusFilter">Filter by Status:</label>
+            <select id="statusFilter" class="form-control w-25">
+                <option value="">All</option>
+                <option value="PENDING">PENDING</option>
+                <option value="RESOLVED">RESOLVED</option>
+                <option value="ONPROCESS">ONPROCESS</option>
+            </select>
+        </div>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Ticket No</th>
+                    <th>Issue</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                    <th>Solution</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="ticketTableBody">
+                <% tickets.forEach(ticket => { %>
+                    <tr class="ticket-row" data-status="<%= ticket.status %>">
+                        <td><%= ticket.ticketNo %></td>
+                        <td><%= ticket.issue %></td>
+                        <td><%= ticket.status %></td>
+                        <td><%= new Date(ticket.created_at.$date).toLocaleString() %></td>
+                        <td><%= ticket.solution %></td>
+                        <td><input id="<%= ticket.ticketNo %>" type="text" class="form-control"></td>
+                    <td>
+                        <button 
+                        data-ticketNo="<%= ticket.ticketNo %>" 
+                        class="btn btn-success" 
+                        onclick="submitTicket(this)"
+                    >
+                        Submit
+                    </button>
+                </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+    <script>
+        document.getElementById('statusFilter').addEventListener('change', function() {
+            var filterValue = this.value;
+            var rows = document.querySelectorAll('.ticket-row');
+            rows.forEach(row => {
+                if (filterValue === "" || row.getAttribute('data-status') === filterValue) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
+
+        function submitTicket(button) {
+            const ticketNo = button.getAttribute('data-ticketNo');
+            const url = `/ticket/${ticketNo}/solution `; // Update the URL as needed
+            document.getElementById('loadingIndicator').style.display = 'block';
+            const solField = document.getElementById(ticketNo);
+            console.log(solField.value);
+            console.log(solField);
+            
+            fetch(url, {
+                method: 'POST', // or 'GET', depending on your endpoint
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    solution: solField.value
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                alert("Solution updated")
+                // Handle success (e.g., show a message, update the UI)
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                // Handle error (e.g., show an error message)
+            }).finally(()=>{
+                document.getElementById('loadingIndicator').style.display = 'none';
+                window.location.reload(true);
+
+            });
+        }
+
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

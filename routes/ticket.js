@@ -1,21 +1,16 @@
-const express = require('express');
-const nodemailer = require("nodemailer");
-const Ticket = require('../schemas/ticket.js');
-const router = express.Router();
-const mongoose = require('mongoose');
+  const express = require('express');
+  const nodemailer = require("nodemailer");
+  const Ticket = require('../schemas/ticket.js');
+  const router = express.Router();
+  const mongoose = require('mongoose');
 
-// let mailOption = {
-//   from: "ca225113134@bhc.edu.in",
-//   to: "manavaikumarg35017@gmail.com",
-//   sub: "New Appointment Request!",
-//   html: "<h1>hello</h1>"
-// };
+require('dotenv').config()
 
 const mailOption = (userId,userIssuePrompts,date,issueStatus)=> ({
   //server mail id
   from: 'ca225113134@bhc.edu.in',
   //support-team mail-id
-  to: 'manavaikumarg35017@gmail.com',
+  to: process.env.RECIVER_EMAIL,
   subject: 'New Student Issue Raised',
   html: `
     <h2>New Student Issue Raised</h2>
@@ -37,24 +32,20 @@ const FLAGS =  {
   ONPROCESS:"ONPROCESS"
 }
 
+console.log(
+  {user: process.env.EMAIL,
+  pass: process.env.EMAIL_PASS,});
 
 
 const transport = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "ca225113134@bhc.edu.in",
-    pass: "goodmorning14062004",
+    user: process.env.EMAIL,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
 
-
-router.post("/appointment", (req, res) => {
-  
-  let { name, email, phno, message } = req.body;
-
-
-});
 
 
 async function getPreviousTicketNumber(){
@@ -104,7 +95,7 @@ router.post('/', async (req, res) => {
         }
         let ttic = new Ticket(ticket);
         let RR = await ttic.save();
-        console.log(RR);
+        
         //userId,userIssuePrompts,date,issueStatus
         transport.sendMail(mailOption("student-id",
           req.body.issue,new Date().toISOString(),ttic.status ), (err, info) => {
@@ -163,6 +154,14 @@ router.get('/', async (req, res) => {
   
   try {
     const tickets = await Ticket.find();
+  
+    // for adding dummy solution 
+  /*  tickets.forEach((t)=>{
+      t.solution = "Trail solution"
+      let ff = t.save()  ;     
+    })
+    */
+
     res.status(200).json(tickets);
   } catch (error) {
     res.status(500).send(error);
@@ -197,6 +196,9 @@ router.delete('/:id', async (req, res) => {
     
   }
 });
+
+
+
 
 module.exports = router;
 

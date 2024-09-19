@@ -2,23 +2,26 @@ const express = require('express');
 const Ticket = require('./schemas/ticket.js');
 const mongoose = require('mongoose');
 const ticketHandler = require("./routes/ticket.js")
+const knowledgebase = require("./routes/knowledgebase.js");
+const solution = require("./routes/solution.js");
+const dotenv  = require('dotenv')
 const app = express();
-const port = 3000;
+//const port = 3000;
+
 app.use(express.json());
 app.use("/ticket",ticketHandler);
-// MongoDB connection
-//const mongoURI = 'mongodb+srv://bhc:82u8OnGgaUq48KyS@pollutionapp.hzueuhd.mongodb.net/?retryWrites=true&w=majority';
+app.use("/knowledgebase",knowledgebase);
+app.use("/solution",solution);
+dotenv.config()
+app.set('view engine', 'ejs');
 
-const mongoURI="mongodb+srv://ca225113134:aFTR4CCQwTI1pQl7@clusteruganda.kpt8b.mongodb.net/"
-//mongodb+srv://ca225113134:<db_password>@clusteruganda.kpt8b.mongodb.net/
-
-// ca225113134  aFTR4CCQwTI1pQl7
 
 const path = require("path");
 
 app.get('/', (req, res) => {
   res.send("<h1>hiii</h1>");
 });
+
 
 app.get('/page', (req, res) => {
   
@@ -43,13 +46,13 @@ app.get("/test",async (req,res)=>{
 
 
 
-mongoose.connect(mongoURI, {
+mongoose.connect(process.env.MONGODB_URL, {
 })
 .then(() =>{
     console.log('MongoDB connected...')
 
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+app.listen(process.env.PORT, () => {
+    console.log(`Server is running on http://localhost:${process.env.PORT}`);
 });
 })
 .catch(err => console.log(err));
@@ -79,7 +82,7 @@ fetch('https://cf62-220-158-156-196.ngrok-free.app/ticket', {
 
 
 
-curl -X POST http://localhost:3000/ \
+curl -X POST http://localhost:3000/ticket \
      -H "Content-Type: application/json" \
      -d '{
            "issue": "Trying to add solution"
