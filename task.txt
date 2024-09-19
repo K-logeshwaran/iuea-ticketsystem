@@ -1,9 +1,0 @@
-ticket generation
-
-mail notification 
- 
-adding flags to ticket 
-
-staff ticket access 
-
-
